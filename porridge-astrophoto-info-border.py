@@ -111,8 +111,7 @@ def show_dialog(procedure, config):
 
       dialog.fill(["box-border-inner", "box-border-outer", "font-box", "text-row-1", "size-row-1", "text-row-2", "size-row-2"])
 
-      if not dialog.run():
-        return procedure.new_return_values(Gimp.PDBStatusType.CANCEL, None)
+      return dialog.run()
     finally:
       dialog.destroy()
 
@@ -122,7 +121,8 @@ def astrophoto_border_run(procedure, run_mode, image, drawables, config, data):
     return procedure.new_return_values(Gimp.PDBStatusType.CALLING_ERROR, GLib.Error(f"Procedure '{PROCEDURE_NAME}' works with images only."))
 
   if run_mode == Gimp.RunMode.INTERACTIVE:
-    show_dialog(procedure, config)
+    if not show_dialog(procedure, config):
+      return procedure.new_return_values(Gimp.PDBStatusType.CANCEL, None)
 
   inner_width = config.get_property('border-size-inner')
   outer_width = config.get_property('border-size-outer')
